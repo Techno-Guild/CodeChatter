@@ -49,11 +49,11 @@ def index():
 @app.route('/query', methods=['POST'])
 @csrf.exempt
 def ask():
-    question = request.form.get('question')
-    if not question:
-        return jsonify({"error": "Please enter a query in text area."}), 400
-
     try:
+        question = request.form.get('question')
+        if not question:
+            return jsonify({"error": "Please enter a query in text area."}), 400
+
         selected_model = request.form.get('model', 'mixtral-8x7b-32768')  # Default to mixtral-8x7b-32768 if not specified
 
         chat_completion = client.chat.completions.create(
@@ -83,6 +83,14 @@ def ask():
         return Markup(processed_response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('500.html'), 500
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True, ssl_context='adhoc')
