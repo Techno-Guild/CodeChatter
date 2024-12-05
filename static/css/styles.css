@@ -1,24 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
 :root {
-    --primary-color: #2c2c2c; /* Dark grey */
-    --secondary-color: #4f4f4f; /* Medium grey */
-    --accent-color: #e0e0e0; /* Light grey */
-    --background-color: #1a1a1a; /* Very dark grey */
-    --text-color: #ffffff; /* White */
+    --text-color: #192a51; /* Dark grey */
+    --secondary-color: #778da9; /* Medium grey */
+    --accent-color: #415a77; /* Light grey */
+    --background-color: #6d6875; /* Very dark grey */
+    --primary-color: #e0e1dd; /* White */
 }
-
-* {
-    margin: 0;
-    padding: 0;
-  }
-  
 
 body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
-    line-height: 1.6;
 }
 
 canvas{
@@ -29,29 +22,7 @@ canvas{
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
-    min-height: 110vh;
-}
-
-h1 {
-    color: rgb(0, 0, 0);
-    background-color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 500px;
-    padding: 20px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 30px;
-    
+    flex: 1;
 }
 
 .code-header {
@@ -80,10 +51,6 @@ header {
     margin-right: 5px;
 }
 
-h1 {
-    margin-bottom: 0; /* Remove the bottom margin from h1 */
-}
-
 main {
     display: flex;
     flex-direction: column;
@@ -110,8 +77,8 @@ form {
 }
 
 textarea {
-    width: 80%;
-    padding: 15px;
+    width: 100%;
+    padding: 10px;
     border: 2px solid var(--primary-color);
     border-radius: 5px;
     font-size: 1rem;
@@ -120,16 +87,18 @@ textarea {
 
 button {
     background-color: var(--accent-color);
-    color: rgb(255, 0, 0);
+    color: white;
     border: none;
-    padding: 15px 20px;
+    padding: 10px 15px;
     font-size: 1rem;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    height: 50px; /* Ensure consistent height */
 }
 
+button:hover {
+    background-color: #34495e;
+}
 
 h2 {
     color: var(--secondary-color);
@@ -137,7 +106,7 @@ h2 {
 }
 
 .code-container {
-    background-color: #2c2c2c; /* Dark grey for code container */
+    background-color: #ffffff; /* Dark grey for code container */
     border: 1px solid #dee2e6;
     border-radius: 5px;
     padding: 15px;
@@ -245,24 +214,23 @@ code {
     }
 }
 
-footer {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    text-align: center;
-    padding: 20px 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
+.social-icons {
+    position: fixed;
+    top: 50%;
     left: 0;
-    bottom: 0;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 0 5px 5px 0;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .social-icons a {
-    color: var(--secondary-color);
+    color: var(--primary-color);
     font-size: 24px;
-    margin: 0 10px;
+    margin: 10px 0;
     transition: color 0.3s ease;
 }
 
