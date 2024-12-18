@@ -23,7 +23,8 @@ cache.init_app(app)
 # Get API key from environment variables
 api = os.getenv("GROQ_API_KEY")
 if not api:
-    raise ValueError("GROQ_API_KEY environment variable is not set")
+    print("Error: GROQ_API_KEY environment variable is not set")
+    exit(1)
 
 # Initialize Groq client
 client = Groq(api_key=api)
@@ -52,15 +53,30 @@ def ask():
     try:
         question = request.form.get('question')
         if not question:
-            return jsonify({"error": "Please enter a query in text area."}), 400
+            return jsonify({"error": "Please enter a question"}), 400
 
-        selected_model = request.form.get('model', 'mixtral-8x7b-32768')  # Default to mixtral-8x7b-32768 if not specified
+        # Add user message HTML
+        response_html = f"""
+        <div class="message user">
+            <div class="message-bubble">{question}</div>
+        </div>
+        """
 
+        selected_model = request.form.get('model', 'mixtral-8x7b-32768')
+        template = """
+                You are an AI-powered coding assistant here to help with programming challenges.
+                You can assist with various tasks, including:
+                Debugging Code: Identify and fix errors in code shared by the user. 
+                Explaining Concepts: Provide detailed explanations of programming concepts. 
+                Code Suggestions: Offer code snippets and suggest approaches to implement features. 
+                Optimization Tips: Advise on improving code performance.
+        """
+        
         chat_completion = client.chat.completions.create(
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an AI-powered coding assistant here to help with programming challenges. \nYou can assist with various tasks, including:\n\n- **Debugging Code:** Identify and fix errors in code shared by the user.\n- **Explaining Concepts:** Provide detailed explanations of programming concepts.\n- **Code Suggestions:** Offer code snippets and suggest approaches to implement features.\n- **Optimization Tips:** Advise on improving code performance.\n- **Learning Resources:** Recommend tutorials, articles, and other resources to help the user learn something new."
+                    "content": template
                 },
                 {
                     "role": "user",
@@ -68,21 +84,27 @@ def ask():
                 },
             ],
             model=selected_model,
-            max_tokens=1024,
         )
 
         response = chat_completion.choices[0].message.content
 
+        # Process the response and wrap it in assistant message HTML
         def replace_code_block(match):
             language = match.group(1) or 'plaintext'
             code = match.group(2)
             return f'<pre><code class="language-{language}">{code}</code></pre>'
 
         processed_response = re.sub(r'```(\w+)?\n(.*?)```', replace_code_block, response, flags=re.DOTALL)
+        
+        response_html += f"""
+        <div class="message assistant">
+            <div class="message-bubble">{processed_response}</div>
+        </div>
+        """
 
-        return Markup(processed_response)
+        return Markup(response_html)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 @app.errorhandler(500)
 def server_error(e):
@@ -93,4 +115,8 @@ def not_found(e):
     return render_template('404.html'), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, ssl_context='adhoc')
+    try:
+        app.run(debug=True, ssl_context='adhoc')
+    except Exception as e:
+        print(f"Failed to start the server: {e}")
+        exit(1)

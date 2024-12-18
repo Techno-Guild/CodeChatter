@@ -11,6 +11,23 @@ document.body.addEventListener('htmx:afterRequest', function(event) {
     }
 });
 
+// Handle enter key press
+document.querySelector('.chat-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const form = this.closest('form');
+        if (this.value.trim()) {
+            form.dispatchEvent(new Event('submit'));
+        }
+    }
+});
+
+// Auto resize textarea as user types
+document.querySelector('.chat-input').addEventListener('input', function() {
+    this.style.height = '60px';
+    this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+});
+
 function copyCode() {
     const codeDisplay = document.getElementById('code-display');
     navigator.clipboard.writeText(codeDisplay.textContent).then(() => {

@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Whisper - AI Coding Assistant</title>
+    <title>CodeChatter AI - Intelligent Coding Assistant</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/css.min.js"></script>
@@ -24,45 +25,101 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/kotlin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/python.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <main>
-            <section class="answer-section">
-                <div class="code-header">
-                    <h2><i class="fas fa-laptop-code"></i>Display Screen</h2>
-                    <button id="copy-button" class="copy-btn" onclick="copyCode()">
-                        <i class="fas fa-copy"></i> Copy Code
-                    </button>
+<body class="bg-light">
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 bg-dark text-white p-3 sidebar">
+                <h4 class="mb-4">CodeChatter AI</h4>
+                <div class="model-selection mb-4">
+                    <label class="form-label text-muted">Select Model</label>
+                    <select name="model" id="model-select" class="form-select">
+                        {% for model in model_options %}
+                            <option value="{{ model.value }}">{{ model.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div id="code-display" class="code-container"></div>
-            </section>
-
-            <section class="question-section">
-                <form hx-post="/query" hx-target="#code-display" hx-swap="innerHTML">
-                    <textarea name="question" placeholder="Ask your coding question here..."></textarea>
-                    <div class="form-row">
-                        <div class="model-selection">
-                            <select name="model" id="model-select">
-                                {% for model in model_options %}
-                                    <option value="{{ model.value }}">{{ model.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit"><i class="fas fa-paper-plane"></i> Ask</button>
+                
+                <!-- Social Links -->
+                <div class="mt-auto">
+                    <div class="social-links" >
+                        <a href="https://github.com/yashksaini-coder" target="_blank" class="btn btn-outline-light btn-sm w-100">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                        <a href="https://dev.to/yashksaini" target="_blank" class="btn btn-outline-light btn-sw w-100">
+                            <i class="fab fa-dev"></i> Dev.to
+                        </a>
+                        <a href="https://linkedin.com/in/yashksaini" target="_blank" class="btn btn-outline-light btn-sm w-100">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                        <a href="https://x.com/EasycodesDev" target="_blank" class="btn btn-outline-light btn-sm w-100">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
                     </div>
-                </form>
-            </section>
-                <div class="social-icons">
-                    <ul>
-                        <li><a href="https://github.com/yashksaini-coder" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a></li>
-                        <li><a href="https://x.com/EasycodesDev" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a></li>
-                        <li><a href="https://linkedin.com/in/yashksaini" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a></li>
-                        <li><a href="https://bento.me/yashksaini" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i></a></li>
-                    </ul>
                 </div>
-        </main>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="chat-container" id="chat-container">
+                    <!-- Messages will be dynamically added here -->
+                </div>
+
+                <div class="input-container">
+                    <form class="input-form" hx-post="/query" hx-target="#chat-container" hx-swap="beforeend">
+                        <div class="input-group">
+                            <textarea 
+                                name="question" 
+                                class="form-control chat-input"
+                                placeholder="Ask me anything about coding... (Press Enter to send, Shift+Enter for new line)"
+                                required
+                                rows="1"
+                                hx-trigger="keydown[key=='Enter' && !shiftKey]"
+                            ></textarea>
+                            <button type="submit" class="btn btn-primary send-button">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Automatically adjust textarea height
+        document.querySelector('textarea').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        // Scroll to bottom when new messages arrive
+        document.body.addEventListener('htmx:afterRequest', function() {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+
+        // Show loading state
+        document.body.addEventListener('htmx:beforeRequest', function(evt) {
+            const form = evt.detail.elt;
+            const button = form.querySelector('button');
+            const icon = button.querySelector('i');
+            icon.className = 'loading';
+            button.disabled = true;
+        });
+
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            const form = evt.detail.elt;
+            const button = form.querySelector('button');
+            const icon = button.querySelector('i');
+            icon.className = 'fas fa-paper-plane';
+            button.disabled = false;
+            form.reset();
+        });
+    </script>
     <script src="../static/js/script.js"></script>
 </body>
 </html>
